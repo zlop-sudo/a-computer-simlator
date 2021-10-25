@@ -6,9 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import components.ProgramCounter;
 import components.interact;
-import conversion.ConvertBinToDec;
 
 import javax.swing.JLabel;
 import java.awt.Color;
@@ -18,8 +16,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JToggleButton;
-import javax.swing.JDesktopPane;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 
 public class PanelView extends JFrame {
 
@@ -55,7 +53,10 @@ public class PanelView extends JFrame {
 	private JTextField textField_15;
 	private JTextField textHalt;
 	private JTextField textRun;
-	
+	private JTextArea textArea;
+	private JTextField textField_17;
+	private JScrollPane scrollPane;
+
 	private interact cpu;		
 	
 	String op_bit0;
@@ -75,7 +76,8 @@ public class PanelView extends JFrame {
 	String ip_add_1_bit;
 	String ip_add_0_bit;
 	String instruction, operation, address, gpr, ixr;
-	private JTextField textField_16;
+	
+	private int pro1flag1 = 1;
 
 	/**
 	 * Main method to Launch the GUI
@@ -1028,10 +1030,10 @@ public class PanelView extends JFrame {
 		JButton btnNewButton_7 = new JButton("SS");
 		btnNewButton_7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SS();
+				SS(0);
 			}
 		});
-		btnNewButton_7.setBounds(330, 355, 30, 45);
+		btnNewButton_7.setBounds(335, 355, 30, 45);
 		contentPane.add(btnNewButton_7);
 		
 		//Text box for operation bit0
@@ -1502,21 +1504,48 @@ public class PanelView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnNewButton_8.setBounds(50, 445, 142, 29);
+		btnNewButton_8.setBounds(20, 444, 142, 29);
 		contentPane.add(btnNewButton_8);
 		
 		JButton btnNewButton_9 = new JButton("Input");
-		btnNewButton_9.setBounds(270, 426, 117, 29);
+		btnNewButton_9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String data = textField_17.getText();
+				input(data);
+			}
+		});
+		btnNewButton_9.setBounds(203, 467, 117, 29);
 		contentPane.add(btnNewButton_9);
 		
-		JButton btnNewButton_10 = new JButton("Compare");
-		btnNewButton_10.setBounds(270, 467, 117, 29);
+		JButton btnNewButton_10 = new JButton("Get answer");
+		btnNewButton_10.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_10.setBounds(408, 467, 117, 29);
 		contentPane.add(btnNewButton_10);
 		
-		textField_16 = new JTextField();
-		textField_16.setBounds(35, 508, 524, 73);
-		contentPane.add(textField_16);
-		textField_16.setColumns(10);
+		JButton btnNewButton_11 = new JButton("Run single instruction");
+		btnNewButton_11.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SS(1);
+			}
+		});
+		btnNewButton_11.setBounds(377, 426, 171, 29);
+		contentPane.add(btnNewButton_11);
+		
+		textField_17 = new JTextField();
+		textField_17.setBounds(196, 426, 130, 26);
+		contentPane.add(textField_17);
+		textField_17.setColumns(10);
+		
+		textArea = new JTextArea();
+		textArea.setEditable (false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        scrollPane = new JScrollPane(textArea);
+        scrollPane.setBounds(32, 508, 516, 108);
+		contentPane.add(scrollPane);
 	}
 	
 	// get the current status of CPU and display it after each click
@@ -1557,20 +1586,23 @@ public class PanelView extends JFrame {
 	
 	// call the initial function of CPU which restart the machine
 	public void IPL() {
-		int halt = cpu.IPL_button();
+		cpu.IPL_button();
 		display();
         textHalt.setBackground(Color.WHITE);
        	textRun.setBackground(Color.GREEN);
 	}
 	
 	// call the run single step function including all the operations of executing an instruciton
-	public void SS() {
+	public void SS(int flag) {
 		int halt = cpu.SS_button();
 		display();
 		if (halt == 1) {
         	textHalt.setBackground(Color.RED);
         	textRun.setBackground(Color.WHITE);
         }
+		if (flag == 1) {
+			textArea.setText(textArea.getText() + "\nexecute the instruction " + Integer.toBinaryString(cpu.get_number(11)) + "\n");
+		}
 	}
 	
 	// load the input to the Gpr0
@@ -1631,5 +1663,36 @@ public class PanelView extends JFrame {
 	public void load_MBR() {
 		cpu.LD_button(instruction, 10);
 		display();
+	}
+	
+	// put the data to the memory and limit the number within 0-65535
+	public void input(String data) {
+		int number = Integer.parseInt(data);
+		if (number < 0) {
+			textArea.setText(textArea.getText() + "the number should be Non-negtive, please enter again\n");
+			return;
+		}
+		else if (number > 65535) {
+			textArea.setText(textArea.getText() + "the number should be less than 65536, please enter again\n");
+			return;
+		}
+		
+		if (pro1flag1 == 0) {	//input the number to compare
+			cpu.porgram1lastnumber(data);
+			System.out.println(cpu.CPU.cache.readCache(120 + 8));
+			System.out.println(cpu.CPU.cache.readCache(122 + 8));
+			textArea.setText(textArea.getText() + "\nget compare number:" + data + "\nplease click the button Run single instruction \nOr click button Get answer to get the result directly" +"\n");
+			return;
+		}
+		
+		int next = cpu.program1input(data);	// put 20 number to the memory
+		if (next == 1) {
+			textArea.setText(textArea.getText() + "getnumber:" + data + "\n");
+		}
+		else {
+			textArea.setText(textArea.getText() + "getnumber:" + data + "\n");
+			textArea.setText(textArea.getText() + "Now the memory has 20 numbers, please enter another number to compare and get the closest number\n");
+			pro1flag1 = 0;
+		}
 	}
 }

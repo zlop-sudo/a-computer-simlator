@@ -3,18 +3,17 @@ package components;
 // this is the class that GUI can use and all the components are in the object CPU
 
 import conversion.ConvertBinToDec;
-import conversion.ConvertDecToBin;
 
 public class interact {
 	public CPU_Control CPU = new CPU_Control();
+	public int pro1inputcnt = 0; // count for the 20 numbers input
 	
 	public interact() {
 		CPU.initial();
 	}
 	
-	public int IPL_button() {
+	public void IPL_button() {
 		CPU.initial();
-		return CPU.halt;	// return halt or not, if hault is 1 then it means something went wrong, and the display of MFR will change
 	}
 	
 	public int SS_button() {
@@ -95,5 +94,24 @@ public class interact {
 			return CPU.MFR.getFault();
 		}
 		return 0;
+	}
+	
+	// This function can put 20 numbers to the memory
+	public int program1input(String inputstring) {
+		int input = Integer.parseInt(inputstring);
+		CPU.cache.writeCache(101 + pro1inputcnt + 8, input);
+		pro1inputcnt++;
+		if (pro1inputcnt == 20) {
+			return 0;
+		}
+		else {
+			return 1;
+		}
+	}
+	
+	// This function input the last number to compare
+	public void porgram1lastnumber(String inputstring) {
+		int input = Integer.parseInt(inputstring);
+		CPU.cache.writeCache(122 + 8, input);
 	}
 }
