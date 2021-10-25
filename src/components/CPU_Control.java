@@ -23,7 +23,7 @@ public class CPU_Control{
 
 	public CPU_Control(){
 	}
-// This sets the initial components of the machine (initial or restart)
+// This sets the initial components of the machine (initial or restart) and load IPL.txt
 	public void initial(){
 		PC = new ProgramCounter(0);
 		GPRs = new General_Purpose_Registers();
@@ -42,6 +42,42 @@ public class CPU_Control{
 		// read IPX.txt and load it to the memory
 		try {
 			String pathname = "./IPL.txt";
+			File IPL = new File(pathname);
+			InputStreamReader reader = new InputStreamReader(new FileInputStream(IPL));
+			BufferedReader br = new BufferedReader(reader);
+			String line = "";
+			while (line != null) {
+				line  = br.readLine();
+				if (line == null) break;
+				String[] loadtoMem = line.split(" ");
+				mfindex = cache.writeCache(ConvertHexToDec.convertHexToDec(loadtoMem[0])+8, ConvertHexToDec.convertHexToDec(loadtoMem[1]));
+				checkaddress();
+			}
+			br.close();
+		}	catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+//  This sets the initial components of the machine (initial or restart) and load program1
+	public void loadprogram1(){
+		PC = new ProgramCounter(0);
+		GPRs = new General_Purpose_Registers();
+		IR = new Instruction_Register();
+		IXR = new Index_Registers(0, 100, 1000);
+		MAR = new Memory_Address_Register();
+		MBR = new Memory_Buffer_Register();
+		MFR.resetMFR();
+		cache = new Cache();
+		cache.CPUwrite(1, 6);
+		cache.CPUwrite(6, 0b0000000000000000);
+		
+		//reset halt
+		halt = 0; 
+		
+		// read IPX.txt and load it to the memory
+		try {
+			String pathname = "./program1.txt";
 			File IPL = new File(pathname);
 			InputStreamReader reader = new InputStreamReader(new FileInputStream(IPL));
 			BufferedReader br = new BufferedReader(reader);
@@ -129,6 +165,30 @@ public class CPU_Control{
 			case 7:
 				SIR();
 				break;
+			case 16:
+				MLT();
+				break;
+			case 17:
+				DVD();
+				break;
+			case 18:
+				TRR();
+				break;
+			case 19:
+				AND();
+				break;
+			case 20:
+				ORR();
+				break;
+			case 21:
+				NOT();
+				break;
+			case 25:
+				SRC();
+				break;
+			case 26:
+				RRC();
+				break;
 			default:
 				MFR.setFault(2);
 				halt = 1;
@@ -140,16 +200,16 @@ public class CPU_Control{
 		// if the machine halts, the CPU will not work any more
 		if (halt == 1) return;
 		switch(IR.getopcode()){
-		case 1:
-			Load();
-			break;
-		case 2:
-			Store();
-			break;
-		default:
-			MFR.setFault(2);
-			halt = 1;
-	}
+			case 1:
+				Load();
+				break;
+			case 2:
+				Store();
+				break;
+			default:
+				MFR.setFault(2);
+				halt = 1;
+		}
 	}
 	
 // This acts as the load instruction
@@ -666,6 +726,85 @@ public class CPU_Control{
 	public void SIR() {
 		alu.setY(IR.getregister());
 		alu.subtract(IR.getaddress());
+		GPRs.setregister(IR.getregister(), alu.getResult());
+	}
+	
+	// MLT instruction
+	public void MLT() {
+		if (IR.getregister() != 0 && IR.getregister() != 2) {
+			MFR.setFault(2);
+			halt = 1;
+			return;
+		}
+		alu.setY(GPRs.getregister(IR.getregister()));
+		alu.multiply(GPRs.getregister(IR.getindexregister()));
+		GPRs.setregister(IR.getregister() + 1, alu.getResult() % (int) Math.pow(2, 16));
+		GPRs.setregister(IR.getregister(), alu.getResult() / (int) Math.pow(2, 16));
+	}
+	
+	// DVD instruction
+	public void DVD() {
+		if (IR.getregister() != 0 && IR.getregister() != 2) {
+			MFR.setFault(2);
+			halt = 1;
+			return;
+		}
+		if (IR.getindexregister() != 0 && IR.getindexregister() != 2) {
+			MFR.setFault(2);
+			halt = 1;
+			return;
+		}
+		alu.setY(GPRs.getregister(IR.getregister()));
+		alu.divide(GPRs.getregister(IR.getindexregister()));
+		GPRs.setregister(IR.getregister(), alu.getResult());
+		alu.remainder(GPRs.getregister(IR.getindexregister()));
+		GPRs.setregister(IR.getregister() + 1, alu.getResult());
+	}
+	
+	// TRR instruction
+	public void TRR() {
+		alu.setY(GPRs.getregister(IR.getregister()));
+		alu.equal(GPRs.getregister(IR.getindexregister()));
+	}
+	
+	// AND instruction
+	public void AND() {
+		alu.setY(GPRs.getregister(IR.getregister()));
+		alu.and(GPRs.getregister(IR.getindexregister()));
+		GPRs.setregister(IR.getregister(), alu.getResult());
+	}
+	
+	// ORR instruction
+	public void ORR() {
+		alu.setY(GPRs.getregister(IR.getregister()));
+		alu.or(GPRs.getregister(IR.getindexregister()));
+		GPRs.setregister(IR.getregister(), alu.getResult());
+	}
+	
+	// NOT instruction
+	public void NOT() {
+		alu.not(GPRs.getregister(IR.getregister()));
+		GPRs.setregister(IR.getregister(), alu.getResult());
+	}
+	
+	// SRC instruction
+	public void SRC() {
+		int AL = IR.getindexregister() / 2;
+		int LR = IR.getindexregister() % 2;
+		alu.shift(GPRs.getregister(IR.getregister()), AL, LR, IR.getaddress());
+		GPRs.setregister(IR.getregister(), alu.getResult());
+ 	}
+	
+	// RRC instruction
+	public void RRC() {
+		int AL = IR.getindexregister() / 2;
+		if (AL != 1) {
+			MFR.setFault(2);
+			halt = 1;
+			return;
+		}
+		int LR = IR.getindexregister() % 2;
+		alu.rotate(GPRs.getregister(IR.getregister()), LR, IR.getaddress());
 		GPRs.setregister(IR.getregister(), alu.getResult());
 	}
 	

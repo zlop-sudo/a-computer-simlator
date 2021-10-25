@@ -114,4 +114,20 @@ public class interact {
 		int input = Integer.parseInt(inputstring);
 		CPU.cache.writeCache(122 + 8, input);
 	}
+	
+	// This function can load the program1 to memory
+	public void loadprogram1() {
+		pro1inputcnt = 0;
+		CPU.loadprogram1();
+	}
+	
+	// This function return the number used to compare with the 20 numbers
+	public int pro1target() {
+		return CPU.cache.readCache(122 + 8);
+	}
+	
+	// This function is for printing the 20 numbers together
+	public int pro1_20numbers(int i) {
+		return CPU.cache.readCache(101 + 8 + i);
+	}
 }

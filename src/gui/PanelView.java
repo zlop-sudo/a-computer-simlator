@@ -77,7 +77,10 @@ public class PanelView extends JFrame {
 	String ip_add_0_bit;
 	String instruction, operation, address, gpr, ixr;
 	
-	private int pro1flag1 = 1;
+	private int pro1flag1 = 1; 
+	//status: 1 represent now the program1 need 20 numbers, 
+	// 0 represent now the program1 need the compare number or is executing instructions now
+	// 2 represent already has the result
 
 	/**
 	 * Main method to Launch the GUI
@@ -103,7 +106,7 @@ public class PanelView extends JFrame {
 		//Set the main Frame
 		setTitle("Machine Simulator");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 650);
+		setBounds(100, 100, 600, 800);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.CYAN);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -1494,14 +1497,9 @@ public class PanelView extends JFrame {
 		contentPane.add(textRun);
 		
 		JButton btnNewButton_8 = new JButton("Load Program 1");
-		btnNewButton_8.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				
-			}
-		});
 		btnNewButton_8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				loadProgram1();
 			}
 		});
 		btnNewButton_8.setBounds(20, 444, 142, 29);
@@ -1520,6 +1518,7 @@ public class PanelView extends JFrame {
 		JButton btnNewButton_10 = new JButton("Get answer");
 		btnNewButton_10.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				runProgram1ToTheEnd();
 			}
 		});
 		btnNewButton_10.setBounds(408, 467, 117, 29);
@@ -1544,7 +1543,7 @@ public class PanelView extends JFrame {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         scrollPane = new JScrollPane(textArea);
-        scrollPane.setBounds(32, 508, 516, 108);
+        scrollPane.setBounds(32, 508, 516, 250);
 		contentPane.add(scrollPane);
 	}
 	
@@ -1592,8 +1591,19 @@ public class PanelView extends JFrame {
        	textRun.setBackground(Color.GREEN);
 	}
 	
-	// call the run single step function including all the operations of executing an instruciton
+	// call the run single step function including all the operations of executing an instruction
 	public void SS(int flag) {
+		if (pro1flag1 == 1) { // not ready to run instructions yet
+			return;
+		}
+		if (pro1flag1 == 2) { // print result
+			textArea.setText(textArea.getText() + "The 20 numbers are:\n");
+			for (int i = 0; i < 20; i++) {
+				textArea.setText(textArea.getText() + cpu.pro1_20numbers(i) + " ");
+			}
+			textArea.setText(textArea.getText() + "\nThe closest number to " + cpu.pro1target() + " is in gprs0, which is " + cpu.get_number(1) + "\n");
+			return;
+		}
 		int halt = cpu.SS_button();
 		display();
 		if (halt == 1) {
@@ -1601,7 +1611,10 @@ public class PanelView extends JFrame {
         	textRun.setBackground(Color.WHITE);
         }
 		if (flag == 1) {
-			textArea.setText(textArea.getText() + "\nexecute the instruction " + Integer.toBinaryString(cpu.get_number(11)) + "\n");
+			textArea.setText(textArea.getText() + "\nexecute the instruction " + Integer.toBinaryString(cpu.get_number(11)) + ", then the PC is " + cpu.get_number(8) + "\n");
+			if (cpu.get_number(11) == 0) {
+				pro1flag1 = 2;
+			}
 		}
 	}
 	
@@ -1667,20 +1680,21 @@ public class PanelView extends JFrame {
 	
 	// put the data to the memory and limit the number within 0-65535
 	public void input(String data) {
+		if (pro1flag1 == 2) { // already have the result
+			return;
+		}
 		int number = Integer.parseInt(data);
 		if (number < 0) {
-			textArea.setText(textArea.getText() + "the number should be Non-negtive, please enter again\n");
+			textArea.setText(textArea.getText() + "the number should be Non-negtive, please write again\n");
 			return;
 		}
 		else if (number > 65535) {
-			textArea.setText(textArea.getText() + "the number should be less than 65536, please enter again\n");
+			textArea.setText(textArea.getText() + "the number should be less than 65536, please write again\n");
 			return;
 		}
 		
 		if (pro1flag1 == 0) {	//input the number to compare
 			cpu.porgram1lastnumber(data);
-			System.out.println(cpu.CPU.cache.readCache(120 + 8));
-			System.out.println(cpu.CPU.cache.readCache(122 + 8));
 			textArea.setText(textArea.getText() + "\nget compare number:" + data + "\nplease click the button Run single instruction \nOr click button Get answer to get the result directly" +"\n");
 			return;
 		}
@@ -1694,5 +1708,26 @@ public class PanelView extends JFrame {
 			textArea.setText(textArea.getText() + "Now the memory has 20 numbers, please enter another number to compare and get the closest number\n");
 			pro1flag1 = 0;
 		}
+	}
+	
+	// initial or restart the program 1
+	public void loadProgram1() {
+		pro1flag1 = 1;
+		cpu.loadprogram1();
+		textArea.setText("Now the program1 has been loaded to the memory\n please write 20 numbers in the right box and press input button for each number\n then write the last number to compare and get the closest number from the 20 numbers\n\n");
+		display();
+        textHalt.setBackground(Color.WHITE);
+       	textRun.setBackground(Color.GREEN);
+	}
+	
+	// This function will run the program1 to the end and print the answer
+	public void runProgram1ToTheEnd() {
+		if (pro1flag1 == 1) {
+			return;
+		}
+		do {
+			SS(1);
+		} while (pro1flag1 != 2);
+		SS(1);
 	}
 }

@@ -1,6 +1,6 @@
 package components;
 
-// compute unsigned number
+// compute unsigned number (except shift and rotate)
 public class ALU {
 	private int Y = 0;
 	private int Z = 0;
@@ -64,7 +64,60 @@ public class ALU {
 	}
 	
 	public void not(int secondData) {
-		Z = ~ secondData;
+		Z = 0;
+		for (int i = 15; i >= 0; i--) {
+			Z += Math.pow(((secondData / (int) Math.pow(2, i)) + 1 ) % 2 * 2, i);
+			secondData %= (int) Math.pow(2, i);
+		}
+	}
+	
+	public void remainder(int secondData) {
+		if (secondData == 0) {
+			CC.DIVZERO();
+		}
+		else {
+			Z = Y % secondData;
+		}
+	}
+	
+	public void shift(int secondData, int AL, int LR, int count) {
+		if (AL == 0) {
+			if (LR == 1) {
+				short signed = (short) secondData;
+				Z = (int) (signed << count); 
+			}
+			else if (LR == 0) {
+				short signed = (short) secondData;
+				Z = (int) (signed >> count); 
+			}
+		}
+		else if (AL == 1) {
+			if (LR == 1) {
+				Z = secondData * (int) Math.pow(2, count);
+				short lowbits = (short) Z;
+				Z = (int) lowbits;
+			}
+			else if (LR == 0) {
+				short signed = (short) secondData;
+				Z = (int) (signed >>> count); 
+			}
+		}
+	}
+	
+	public void rotate(int secondData, int LR, int count) {
+		if (LR == 1) {
+			Z = secondData * (int) Math.pow(2, count);
+			int highbits = Z / (int) Math.pow(2, 16);
+			short lowbits = (short) Z;
+			Z = (int) lowbits;
+			Z += highbits;
+		}
+		else if (LR == 0) {
+			int lowbits = secondData % (int) Math.pow(2, count);
+			short signed = (short) secondData;
+			Z = (int) (signed >>> count); 
+			Z += lowbits * (int) Math.pow(2, 16 - count);
+		}
 	}
 	
 	public int getResult() {
