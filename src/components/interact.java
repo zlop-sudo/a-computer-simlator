@@ -92,14 +92,18 @@ public class interact {
 			return CPU.IR.getinstruction();
 		case 12:
 			return CPU.MFR.getFault();
+		case 13:
+			return CPU.device.keyboard;
+		case 14:
+			return CPU.device.printer;
 		}
 		return 0;
 	}
 	
-	// This function can put 20 numbers to the memory
+	// This function can put 20 numbers to the device 0
 	public int program1input(String inputstring) {
 		int input = Integer.parseInt(inputstring);
-		CPU.cache.writeCache(101 + pro1inputcnt + 8, input);
+		CPU.device.keyboard = input;
 		pro1inputcnt++;
 		if (pro1inputcnt == 20) {
 			return 0;
@@ -107,12 +111,6 @@ public class interact {
 		else {
 			return 1;
 		}
-	}
-	
-	// This function input the last number to compare
-	public void porgram1lastnumber(String inputstring) {
-		int input = Integer.parseInt(inputstring);
-		CPU.cache.writeCache(122 + 8, input);
 	}
 	
 	// This function can load the program1 to memory
@@ -129,5 +127,10 @@ public class interact {
 	// This function is for printing the 20 numbers together
 	public int pro1_20numbers(int i) {
 		return CPU.cache.readCache(101 + 8 + i);
+	}
+	
+	// This function return the value of device 1
+	public int printer() {
+		return CPU.device.printer;
 	}
 }

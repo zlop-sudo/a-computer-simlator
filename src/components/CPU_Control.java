@@ -16,6 +16,7 @@ public class CPU_Control{
 	public Machine_Fault_Register MFR = new Machine_Fault_Register();
 	public Cache cache = new Cache();
 	public ALU alu = new ALU();
+	public Device device = new Device();
 	// machine fault status 
 	private int mfindex = 0;
 	// halt or not
@@ -32,6 +33,7 @@ public class CPU_Control{
 		MAR = new Memory_Address_Register();
 		MBR = new Memory_Buffer_Register();
 		MFR.resetMFR();
+		device = new Device();
 		cache = new Cache();
 		cache.CPUwrite(1, 6);
 		cache.CPUwrite(6, 0b0000000000000000);
@@ -68,6 +70,7 @@ public class CPU_Control{
 		MAR = new Memory_Address_Register();
 		MBR = new Memory_Buffer_Register();
 		MFR.resetMFR();
+		device = new Device();
 		cache = new Cache();
 		cache.CPUwrite(1, 6);
 		cache.CPUwrite(6, 0b0000000000000000);
@@ -188,6 +191,12 @@ public class CPU_Control{
 				break;
 			case 26:
 				RRC();
+				break;
+			case 49:
+				IN();
+				break;
+			case 50:
+				OUT();
 				break;
 			default:
 				MFR.setFault(2);
@@ -806,6 +815,20 @@ public class CPU_Control{
 		int LR = IR.getindexregister() % 2;
 		alu.rotate(GPRs.getregister(IR.getregister()), LR, IR.getaddress());
 		GPRs.setregister(IR.getregister(), alu.getResult());
+	}
+	
+	// IN instruction
+	public void IN() {
+		if (IR.getaddress() == 0) {
+			GPRs.setregister(IR.getregister(), device.keyboard);
+		}
+	}
+	
+	// OUT instruction
+	public void OUT() {
+		if (IR.getaddress() == 1) {
+			device.printer = GPRs.getregister(IR.getregister());
+		}
 	}
 	
 // check the access of memory is write or not. If not, we go to set the MFR and get solution which is halt right now

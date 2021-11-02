@@ -78,6 +78,9 @@ public class PanelView extends JFrame {
 	String instruction, operation, address, gpr, ixr;
 	
 	private int pro1flag1 = 1; 
+	private int typeFlag = 1;
+	private JTextField textField_16;
+	private JTextField textField_18;
 	//status: 1 represent now the program1 need 20 numbers, 
 	// 0 represent now the program1 need the compare number or is executing instructions now
 	// 2 represent already has the result
@@ -867,66 +870,258 @@ public class PanelView extends JFrame {
 		//Buttons for instruction 0-15
 		//User cannot click these buttons for now. 
 		JButton btnNewButton = new JButton("15");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton.setBounds(20, 250, 30, 45);
 		contentPane.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("14");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_1.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_1.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_1.setBounds(50, 250, 30, 45);
 		contentPane.add(btnNewButton_1);
 		
 		JButton btnNewButton_2 = new JButton("13");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_2.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_2.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_2.setBounds(80, 250, 30, 45);
 		contentPane.add(btnNewButton_2);
 		
 		JButton btnNewButton_3 = new JButton("12");
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_3.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_3.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_3.setBounds(110, 250, 30, 45);
 		contentPane.add(btnNewButton_3);
 		
 		JButton btnNewButton_4 = new JButton("11");
+		btnNewButton_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_4.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_4.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_4.setBounds(140, 250, 30, 45);
 		contentPane.add(btnNewButton_4);
 		
 		JButton btnNewButton_5 = new JButton("10");
+		btnNewButton_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_5.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_5.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5.setBounds(170, 250, 30, 45);
 		contentPane.add(btnNewButton_5);
 		
 		JButton btnNewButton_5_1 = new JButton("9");
+		btnNewButton_5_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_6.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_6.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_1.setBounds(215, 250, 30, 45);
 		contentPane.add(btnNewButton_5_1);
 		
 		JButton btnNewButton_5_2 = new JButton("8");
+		btnNewButton_5_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_7.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_7.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2.setBounds(245, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2);
 		
 		JButton btnNewButton_5_2_1 = new JButton("7");
+		btnNewButton_5_2_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_8.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_8.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2_1.setBounds(290, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2_1);
 		
 		JButton btnNewButton_5_2_2 = new JButton("6");
+		btnNewButton_5_2_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_9.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_9.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2_2.setBounds(320, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2_2);
 		
 		JButton btnNewButton_5_2_3 = new JButton("5");
+		btnNewButton_5_2_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_10.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_10.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2_3.setBounds(365, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2_3);
 		
 		JButton btnNewButton_5_2_4 = new JButton("4");
+		btnNewButton_5_2_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_11.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_11.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2_4.setBounds(410, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2_4);
 		
 		JButton btnNewButton_5_2_4_1 = new JButton("3");
+		btnNewButton_5_2_4_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_12.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_12.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2_4_1.setBounds(440, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2_4_1);
 		
 		JButton btnNewButton_5_2_4_2 = new JButton("2");
+		btnNewButton_5_2_4_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_13.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_13.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2_4_2.setBounds(470, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2_4_2);
 		
 		JButton btnNewButton_5_2_4_3 = new JButton("1");
+		btnNewButton_5_2_4_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_14.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_14.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2_4_3.setBounds(500, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2_4_3);
 		
 		JButton btnNewButton_5_2_4_4 = new JButton("0");
+		btnNewButton_5_2_4_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (typeFlag == 1) {
+					textField_15.setText("1");
+					typeFlag = 0;
+				}
+				else {
+					textField_15.setText("0");
+					typeFlag = 1;
+				}
+			}
+		});
 		btnNewButton_5_2_4_4.setBounds(530, 250, 30, 45);
 		contentPane.add(btnNewButton_5_2_4_4);
 		
@@ -1545,6 +1740,24 @@ public class PanelView extends JFrame {
         scrollPane = new JScrollPane(textArea);
         scrollPane.setBounds(32, 508, 516, 250);
 		contentPane.add(scrollPane);
+		
+		JLabel lblNewLabel_7 = new JLabel("Keyboard");
+		lblNewLabel_7.setBounds(335, 160, 61, 16);
+		contentPane.add(lblNewLabel_7);
+		
+		JLabel lblNewLabel_8 = new JLabel("Printer");
+		lblNewLabel_8.setBounds(335, 185, 61, 16);
+		contentPane.add(lblNewLabel_8);
+		
+		textField_16 = new JTextField();
+		textField_16.setBounds(407, 155, 130, 26);
+		contentPane.add(textField_16);
+		textField_16.setColumns(10);
+		
+		textField_18 = new JTextField();
+		textField_18.setBounds(407, 180, 130, 26);
+		contentPane.add(textField_18);
+		textField_18.setColumns(10);
 	}
 	
 	// get the current status of CPU and display it after each click
@@ -1561,6 +1774,8 @@ public class PanelView extends JFrame {
         textMBR.setText(Integer.toBinaryString(cpu.get_number(10)));
         textIR.setText(Integer.toBinaryString(cpu.get_number(11)));
         textMFR.setText(Integer.toBinaryString(cpu.get_number(12)));
+        textField_16.setText(Integer.toString(cpu.get_number(13)));
+        textField_18.setText(Integer.toString(cpu.get_number(14)));
 	}
 	
 	// give the input of load instruction to the CPU and execute and check whether something went wrong or not. Halt if something went worng.
@@ -1593,15 +1808,13 @@ public class PanelView extends JFrame {
 	
 	// call the run single step function including all the operations of executing an instruction
 	public void SS(int flag) {
-		if (pro1flag1 == 1) { // not ready to run instructions yet
-			return;
-		}
 		if (pro1flag1 == 2) { // print result
-			textArea.setText(textArea.getText() + "The 20 numbers are:\n");
+			textArea.setText(textArea.getText() + "\nThe 20 numbers are:\n");
 			for (int i = 0; i < 20; i++) {
 				textArea.setText(textArea.getText() + cpu.pro1_20numbers(i) + " ");
 			}
-			textArea.setText(textArea.getText() + "\nThe closest number to " + cpu.pro1target() + " is in gprs0, which is " + cpu.get_number(1) + "\n");
+			System.out.println(cpu.CPU.device.printer);
+			textArea.setText(textArea.getText() + "\nThe closest number to " + cpu.pro1target() + " is in device1 printer, which is " + cpu.printer() + "\n");
 			return;
 		}
 		int halt = cpu.SS_button();
@@ -1611,7 +1824,7 @@ public class PanelView extends JFrame {
         	textRun.setBackground(Color.WHITE);
         }
 		if (flag == 1) {
-			textArea.setText(textArea.getText() + "\nexecute the instruction " + Integer.toBinaryString(cpu.get_number(11)) + ", then the PC is " + cpu.get_number(8) + "\n");
+			textArea.setText(textArea.getText() + "execute the instruction " + Integer.toBinaryString(cpu.get_number(11)) + ", then the PC is " + cpu.get_number(8) + "\n");
 			if (cpu.get_number(11) == 0) {
 				pro1flag1 = 2;
 			}
@@ -1694,18 +1907,27 @@ public class PanelView extends JFrame {
 		}
 		
 		if (pro1flag1 == 0) {	//input the number to compare
-			cpu.porgram1lastnumber(data);
-			textArea.setText(textArea.getText() + "\nget compare number:" + data + "\nplease click the button Run single instruction \nOr click button Get answer to get the result directly" +"\n");
+			cpu.program1input(data);
+			SS(1);
+			SS(1);
+			textArea.setText(textArea.getText() + "get compare number:" + data + "\nplease click the button Run single instruction \nOr click button Get answer to get the result directly" +"\n");
 			return;
 		}
 		
 		int next = cpu.program1input(data);	// put 20 number to the memory
+		for (int i = 0; i < 7; i++) {
+			SS(1);
+		}
 		if (next == 1) {
-			textArea.setText(textArea.getText() + "getnumber:" + data + "\n");
+			textArea.setText(textArea.getText() + "getnumber:" + data + "\n\n");
 		}
 		else {
-			textArea.setText(textArea.getText() + "getnumber:" + data + "\n");
-			textArea.setText(textArea.getText() + "Now the memory has 20 numbers, please enter another number to compare and get the closest number\n");
+			textArea.setText(textArea.getText() + "getnumber:" + data + "\n\n");
+			textArea.setText(textArea.getText() + "\nNow the memory has 20 numbers:\n");
+			for (int i = 0; i < 20; i++) {
+				textArea.setText(textArea.getText() + cpu.pro1_20numbers(i) + " ");
+			}
+			textArea.setText(textArea.getText() + "\nPlease enter another number to compare and get the closest number\n\n");
 			pro1flag1 = 0;
 		}
 	}
@@ -1714,10 +1936,11 @@ public class PanelView extends JFrame {
 	public void loadProgram1() {
 		pro1flag1 = 1;
 		cpu.loadprogram1();
-		textArea.setText("Now the program1 has been loaded to the memory\n please write 20 numbers in the right box and press input button for each number\n then write the last number to compare and get the closest number from the 20 numbers\n\n");
+		textArea.setText("Now the program1 has been loaded to the memory.\nPlease write 20 numbers in the textfield above the input button and press input button for each number\n then write the last number to compare and get the closest number from the 20 numbers\n\n");
 		display();
         textHalt.setBackground(Color.WHITE);
        	textRun.setBackground(Color.GREEN);
+       	SS(1);
 	}
 	
 	// This function will run the program1 to the end and print the answer

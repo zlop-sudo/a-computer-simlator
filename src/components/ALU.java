@@ -2,8 +2,8 @@ package components;
 
 // compute unsigned number (except shift and rotate)
 public class ALU {
-	private int Y = 0;
-	private int Z = 0;
+	private int Y = 0; // first number to compute
+	private int Z = 0; // result
 	public condition_code CC = new condition_code();
 	
 	public boolean setY(int firstData){
