@@ -78,9 +78,11 @@ public class PanelView extends JFrame {
 	String instruction, operation, address, gpr, ixr;
 	
 	private int pro1flag1 = 1; 
+	private int pro2flag1 = 1;
 	private int typeFlag = 1;
 	private JTextField textField_16;
 	private JTextField textField_18;
+	private JTextField textField_19;
 	//status: 1 represent now the program1 need 20 numbers, 
 	// 0 represent now the program1 need the compare number or is executing instructions now
 	// 2 represent already has the result
@@ -1178,7 +1180,7 @@ public class PanelView extends JFrame {
 				
 			}
 		});
-		btnLoad.setBounds(377, 362, 75, 30);
+		btnLoad.setBounds(215, 342, 75, 30);
 		contentPane.add(btnLoad);
 		
 		//when Store button is clicked
@@ -1211,7 +1213,7 @@ public class PanelView extends JFrame {
 				store();
 			}
 		});
-		btnStore.setBounds(245, 362, 75, 30);
+		btnStore.setBounds(89, 342, 75, 30);
 		contentPane.add(btnStore);
 		
 		//when IPL button is clicked
@@ -1221,7 +1223,7 @@ public class PanelView extends JFrame {
 				IPL();
 			}
 		});
-		btnNewButton_6.setBounds(470, 362, 65, 30);
+		btnNewButton_6.setBounds(396, 342, 65, 30);
 		contentPane.add(btnNewButton_6);
 		
 		//when SS button is clicked
@@ -1231,7 +1233,7 @@ public class PanelView extends JFrame {
 				SS(0);
 			}
 		});
-		btnNewButton_7.setBounds(335, 355, 30, 45);
+		btnNewButton_7.setBounds(170, 323, 30, 45);
 		contentPane.add(btnNewButton_7);
 		
 		//Text box for operation bit0
@@ -1670,17 +1672,17 @@ public class PanelView extends JFrame {
 		
 		//Labels for Halt, Run
 		JLabel lblNewLabel_5 = new JLabel("Halt");
-		lblNewLabel_5.setBounds(154, 355, 30, 16);
+		lblNewLabel_5.setBounds(20, 336, 30, 16);
 		contentPane.add(lblNewLabel_5);
 		
 		JLabel lblNewLabel_6 = new JLabel("Run");
-		lblNewLabel_6.setBounds(154, 384, 35, 16);
+		lblNewLabel_6.setBounds(20, 368, 35, 16);
 		contentPane.add(lblNewLabel_6);
 		
 		//Show if program is halted
 		textHalt = new JTextField();
 		textHalt.setBackground(Color.WHITE);
-		textHalt.setBounds(196, 350, 25, 26);
+		textHalt.setBounds(50, 331, 25, 26);
 		contentPane.add(textHalt);
 		textHalt.setColumns(10);
 		
@@ -1688,7 +1690,7 @@ public class PanelView extends JFrame {
 		textRun = new JTextField();
 		textRun.setColumns(10);
 		textRun.setBackground(Color.GREEN);
-		textRun.setBounds(196, 379, 25, 26);
+		textRun.setBounds(50, 363, 25, 26);
 		contentPane.add(textRun);
 		
 		JButton btnNewButton_8 = new JButton("Load Program 1");
@@ -1697,7 +1699,7 @@ public class PanelView extends JFrame {
 				loadProgram1();
 			}
 		});
-		btnNewButton_8.setBounds(20, 444, 142, 29);
+		btnNewButton_8.setBounds(20, 396, 142, 29);
 		contentPane.add(btnNewButton_8);
 		
 		JButton btnNewButton_9 = new JButton("Input");
@@ -1707,7 +1709,7 @@ public class PanelView extends JFrame {
 				input(data);
 			}
 		});
-		btnNewButton_9.setBounds(203, 467, 117, 29);
+		btnNewButton_9.setBounds(23, 426, 117, 29);
 		contentPane.add(btnNewButton_9);
 		
 		JButton btnNewButton_10 = new JButton("Get answer");
@@ -1716,7 +1718,7 @@ public class PanelView extends JFrame {
 				runProgram1ToTheEnd();
 			}
 		});
-		btnNewButton_10.setBounds(408, 467, 117, 29);
+		btnNewButton_10.setBounds(172, 467, 117, 29);
 		contentPane.add(btnNewButton_10);
 		
 		JButton btnNewButton_11 = new JButton("Run single instruction");
@@ -1725,11 +1727,11 @@ public class PanelView extends JFrame {
 				SS(1);
 			}
 		});
-		btnNewButton_11.setBounds(377, 426, 171, 29);
+		btnNewButton_11.setBounds(6, 467, 171, 29);
 		contentPane.add(btnNewButton_11);
 		
 		textField_17 = new JTextField();
-		textField_17.setBounds(196, 426, 130, 26);
+		textField_17.setBounds(145, 426, 130, 26);
 		contentPane.add(textField_17);
 		textField_17.setColumns(10);
 		
@@ -1758,6 +1760,47 @@ public class PanelView extends JFrame {
 		textField_18.setBounds(407, 180, 130, 26);
 		contentPane.add(textField_18);
 		textField_18.setColumns(10);
+		
+		JButton btnNewButton_12 = new JButton("Load Program 2");
+		btnNewButton_12.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				loadProgram2();
+			}
+		});
+		btnNewButton_12.setBounds(299, 396, 141, 29);
+		contentPane.add(btnNewButton_12);
+		
+		JButton btnNewButton_13 = new JButton("Input");
+		btnNewButton_13.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				program2_input();
+			}
+		});
+		btnNewButton_13.setBounds(443, 396, 117, 29);
+		contentPane.add(btnNewButton_13);
+		
+		textField_19 = new JTextField();
+		textField_19.setBounds(310, 426, 247, 39);
+		contentPane.add(textField_19);
+		textField_19.setColumns(10);
+		
+		JButton btnNewButton_14 = new JButton("Run single instruction");
+		btnNewButton_14.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SS(2);
+			}
+		});
+		btnNewButton_14.setBounds(290, 467, 171, 29);
+		contentPane.add(btnNewButton_14);
+		
+		JButton btnNewButton_15 = new JButton("Get answer");
+		btnNewButton_15.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				runProgram2ToTheEnd();
+			}
+		});
+		btnNewButton_15.setBounds(465, 467, 117, 29);
+		contentPane.add(btnNewButton_15);
 	}
 	
 	// get the current status of CPU and display it after each click
@@ -1828,6 +1871,16 @@ public class PanelView extends JFrame {
 			if (cpu.get_number(11) == 0) {
 				pro1flag1 = 2;
 			}
+		}
+		else if (flag == 2) {
+			textArea.setText(textArea.getText() + "execute the instruction " + Integer.toBinaryString(cpu.get_number(11)) + ", then the PC is " + cpu.get_number(8) + "\n");
+		}
+		else if (flag == 3) {
+			textArea.setText(textArea.getText() + "\nexecute the instruction " + Integer.toBinaryString(cpu.get_number(11)) + ", then the PC is " + cpu.get_number(8) + "\n");
+			textArea.setText(textArea.getText() + "Address2: " + cpu.CPU.cache.readCache(1009) + " Address4: " + cpu.CPU.cache.readCache(1014) + "\n");
+			textArea.setText(textArea.getText() + "pointer2: " + cpu.CPU.cache.readCache(1017) + " pointer1: " + cpu.CPU.cache.readCache(1016) + "\n");
+			textArea.setText(textArea.getText() + "Sentence number: " + cpu.CPU.cache.readCache(1019) + " Word number: " + cpu.CPU.cache.readCache(1018) + "\n");
+			textArea.setText(textArea.getText() + "letter of pointer2: " + (char) cpu.CPU.cache.readCache(cpu.CPU.cache.readCache(1017)+8) + "   letter of pointer1: " + (char) cpu.CPU.cache.readCache(cpu.CPU.cache.readCache(1016)+8) + "\n");
 		}
 	}
 	
@@ -1952,5 +2005,75 @@ public class PanelView extends JFrame {
 			SS(1);
 		} while (pro1flag1 != 2);
 		SS(1);
+	}
+	
+	// initial or restart the program 2
+	public void loadProgram2() {
+		pro2flag1 = 1;
+		cpu.loadprogram2();
+		textArea.setText("Now the program2 has been loaded to the memory.\nPlease write 6 sentences in the textfield above the input button and press input button\n then write the target word to compare and detect the word in sentences and its location\n\n");
+		display();
+        textHalt.setBackground(Color.WHITE);
+       	textRun.setBackground(Color.GREEN);
+	}
+	
+	// program2 read 6 sentences or target word
+	public void program2_input() {
+		if (pro2flag1 == 1) {
+			String sentences = textField_19.getText();
+			char[] c = sentences.toCharArray();
+			for (int i = 0; i < c.length; i++) {
+				cpu.CPU.device.inputKeyboard(c[i] - 0);
+				if (c[i] == '.') {
+					i++;
+				}
+			}
+			while (cpu.get_number(8) != 9) {
+				SS(2);
+			}
+			textArea.setText(textArea.getText() + "\nNow the memory has 6 sentences(part of them is showing below):\n");
+			for (int i = 1108; i <= cpu.CPU.cache.readCache(1009); i++) {
+				textArea.setText(textArea.getText() + (char) cpu.CPU.cache.readCache(i));
+			}
+			textArea.setText(textArea.getText() + "\nAddress2: " + cpu.CPU.cache.readCache(1009) + " Address4: " + cpu.CPU.cache.readCache(1014) + "\n");
+			textArea.setText(textArea.getText() + "\nPlease input another word to compare and detect in these sentences\n\n");
+			pro2flag1 = 2;
+		}
+		else if (pro2flag1 == 2) {
+			String word = textField_19.getText();
+			char[] c = word.toCharArray();
+			cpu.CPU.device.keyboardClear();
+			for (int i = 0; i < c.length; i++) {
+				cpu.CPU.device.inputKeyboard(c[i] - 0);
+			}
+			cpu.CPU.device.inputKeyboard(32);
+			while (cpu.get_number(8) != 10) {
+				SS(2);
+			}
+			cpu.CPU.cache.writeCache(1014, cpu.CPU.cache.readCache(1014) - 1);
+			textArea.setText(textArea.getText() + "\nNow the memory has the target word:\n");
+			for (int i = 2000; i < cpu.CPU.cache.readCache(1014); i++) {
+				textArea.setText(textArea.getText() + (char) cpu.CPU.cache.readCache(i+8));
+			}
+			textArea.setText(textArea.getText() + "\nAddress2: " + cpu.CPU.cache.readCache(1009) + " Address4: " + cpu.CPU.cache.readCache(1014) + "\n");
+			pro2flag1 = 3;
+		}
+	}
+	
+	// This function will run the program2 to the end and print the answer
+	public void runProgram2ToTheEnd() {
+		if (pro2flag1 != 3) {
+			return;
+		}
+		while (cpu.get_number(8) != 121 && cpu.get_number(8) != 126) {
+			SS(3);
+		}
+		pro2flag1 = 4;
+		if (cpu.get_number(8) == 121) {
+			textArea.setText(textArea.getText() + "\nThe word has been found.\nPlease click the Run single instruction button for three times\nto output the result to the Printer(1--which means word has been found)\n and the sentence number and the word number location\n");
+		}
+		else if (cpu.get_number(8) == 126) {
+			textArea.setText(textArea.getText() + "\nThe word has not been found.\nYou can click the Run single instruction button\nto output the result to the Printer(0--which means word has not been found)\n");
+		}
 	}
 }

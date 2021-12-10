@@ -83,7 +83,7 @@ public class interact {
 		case 7:
 			return CPU.IXR.getregister(3);
 		case 8:
-			return CPU.PC.getPCaddress();
+			return CPU.PC.getPCaddress() + 8;
 		case 9:
 			return CPU.MAR.getMemaddress();
 		case 10:
@@ -93,7 +93,7 @@ public class interact {
 		case 12:
 			return CPU.MFR.getFault();
 		case 13:
-			return CPU.device.keyboard;
+			return CPU.device.keyboard.get(0);
 		case 14:
 			return CPU.device.printer;
 		}
@@ -103,7 +103,7 @@ public class interact {
 	// This function can put 20 numbers to the device 0
 	public int program1input(String inputstring) {
 		int input = Integer.parseInt(inputstring);
-		CPU.device.keyboard = input;
+		CPU.device.inputKeyboard(input);;
 		pro1inputcnt++;
 		if (pro1inputcnt == 20) {
 			return 0;
@@ -132,5 +132,10 @@ public class interact {
 	// This function return the value of device 1
 	public int printer() {
 		return CPU.device.printer;
+	}
+	
+	// This function can load the program2 to memory
+	public void loadprogram2() {
+		CPU.loadprogram2();
 	}
 }

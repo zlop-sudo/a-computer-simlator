@@ -24,6 +24,7 @@ public class CPU_Control{
 
 	public CPU_Control(){
 	}
+	
 // This sets the initial components of the machine (initial or restart) and load IPL.txt
 	public void initial(){
 		PC = new ProgramCounter(0);
@@ -81,6 +82,44 @@ public class CPU_Control{
 		// read IPX.txt and load it to the memory
 		try {
 			String pathname = "./program1.txt";
+			File IPL = new File(pathname);
+			InputStreamReader reader = new InputStreamReader(new FileInputStream(IPL));
+			BufferedReader br = new BufferedReader(reader);
+			String line = "";
+			while (line != null) {
+				line  = br.readLine();
+				if (line == null) break;
+				String[] loadtoMem = line.split(" ");
+				mfindex = cache.writeCache(ConvertHexToDec.convertHexToDec(loadtoMem[0])+8, ConvertHexToDec.convertHexToDec(loadtoMem[1]));
+				checkaddress();
+			}
+			br.close();
+		}	catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+//  This sets the initial components of the machine (initial or restart) and load program2
+	public void loadprogram2(){
+		PC = new ProgramCounter(0);
+		GPRs = new General_Purpose_Registers();
+		IR = new Instruction_Register();
+		IXR = new Index_Registers(0, 100, 1000);
+		MAR = new Memory_Address_Register();
+		MBR = new Memory_Buffer_Register();
+		MFR.resetMFR();
+		device = new Device();
+		cache = new Cache();
+		cache.CPUwrite(0, 200);
+		cache.CPUwrite(1, 6);
+		cache.CPUwrite(6, 0b0000000000000000);
+		
+		//reset halt
+		halt = 0; 
+		
+		// read IPX.txt and load it to the memory
+		try {
+			String pathname = "./program2.txt";
 			File IPL = new File(pathname);
 			InputStreamReader reader = new InputStreamReader(new FileInputStream(IPL));
 			BufferedReader br = new BufferedReader(reader);
@@ -197,6 +236,9 @@ public class CPU_Control{
 				break;
 			case 50:
 				OUT();
+				break;
+			case 24:
+				TRAP();
 				break;
 			default:
 				MFR.setFault(2);
@@ -364,7 +406,7 @@ public class CPU_Control{
 		checkaddress();
 		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
 		// load the data in MBR to the target register
-		IXR.setregister(IR.getindexregister(), MBR.getData());
+		IXR.setregister(IR.getregister(), MBR.getData());
 	}
 	
 	// STX instruction
@@ -726,14 +768,14 @@ public class CPU_Control{
 	
 	// AIR instruction
 	public void AIR() {
-		alu.setY(IR.getregister());
+		alu.setY(GPRs.getregister(IR.getregister()));
 		alu.add(IR.getaddress());
 		GPRs.setregister(IR.getregister(), alu.getResult());
 	}
 	
 	// SIR instruction
 	public void SIR() {
-		alu.setY(IR.getregister());
+		alu.setY(GPRs.getregister(IR.getregister()));
 		alu.subtract(IR.getaddress());
 		GPRs.setregister(IR.getregister(), alu.getResult());
 	}
@@ -820,7 +862,7 @@ public class CPU_Control{
 	// IN instruction
 	public void IN() {
 		if (IR.getaddress() == 0) {
-			GPRs.setregister(IR.getregister(), device.keyboard);
+			GPRs.setregister(IR.getregister(), device.readKeyboard());
 		}
 	}
 	
@@ -831,6 +873,18 @@ public class CPU_Control{
 		}
 	}
 	
+	// TRAP instruction
+	public void TRAP() {
+		int traptable_address = cache.CPUaccess(0);
+		System.out.print("Trap table address: ");
+		System.out.println(traptable_address);
+		int trap_number = IR.getaddress();
+		cache.CPUwrite(2, PC.getPCaddress() + 1);
+		System.out.print("Trap entry: ");
+		System.out.println(cache.readCache(traptable_address + trap_number + 8));
+		PC.setPCaddress(cache.readCache(traptable_address + trap_number + 8));
+	}
+	
 // check the access of memory is write or not. If not, we go to set the MFR and get solution which is halt right now
 	public void checkaddress() {
 		if (mfindex == -1) {
@@ -839,7 +893,7 @@ public class CPU_Control{
 		}
 		else if (mfindex == -2) {
 			MFR.setFault(3);
-			machinefault();
+			machinefault();	
 		}
 	}
 
