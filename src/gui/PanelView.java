@@ -83,6 +83,8 @@ public class PanelView extends JFrame {
 	private JTextField textField_16;
 	private JTextField textField_18;
 	private JTextField textField_19;
+	private JTextField textField_20;
+	private JTextField textField_21;
 	//status: 1 represent now the program1 need 20 numbers, 
 	// 0 represent now the program1 need the compare number or is executing instructions now
 	// 2 represent already has the result
@@ -1223,7 +1225,7 @@ public class PanelView extends JFrame {
 				IPL();
 			}
 		});
-		btnNewButton_6.setBounds(396, 342, 65, 30);
+		btnNewButton_6.setBounds(310, 342, 65, 30);
 		contentPane.add(btnNewButton_6);
 		
 		//when SS button is clicked
@@ -1801,6 +1803,24 @@ public class PanelView extends JFrame {
 		});
 		btnNewButton_15.setBounds(465, 467, 117, 29);
 		contentPane.add(btnNewButton_15);
+		
+		textField_20 = new JTextField();
+		textField_20.setBounds(460, 326, 130, 26);
+		contentPane.add(textField_20);
+		textField_20.setColumns(10);
+		
+		textField_21 = new JTextField();
+		textField_21.setBounds(460, 363, 130, 26);
+		contentPane.add(textField_21);
+		textField_21.setColumns(10);
+		
+		JLabel lblNewLabel_9 = new JLabel("Fr1");
+		lblNewLabel_9.setBounds(387, 331, 61, 16);
+		contentPane.add(lblNewLabel_9);
+		
+		JLabel lblNewLabel_10 = new JLabel("Fr2");
+		lblNewLabel_10.setBounds(387, 368, 61, 16);
+		contentPane.add(lblNewLabel_10);
 	}
 	
 	// get the current status of CPU and display it after each click
@@ -1819,6 +1839,8 @@ public class PanelView extends JFrame {
         textMFR.setText(Integer.toBinaryString(cpu.get_number(12)));
         textField_16.setText(Integer.toString(cpu.get_number(13)));
         textField_18.setText(Integer.toString(cpu.get_number(14)));
+        textField_20.setText(Double.toString(cpu.CPU.FRs.readFloat(0)));
+        textField_20.setText(Double.toString(cpu.CPU.FRs.readFloat(1)));
 	}
 	
 	// give the input of load instruction to the CPU and execute and check whether something went wrong or not. Halt if something went worng.

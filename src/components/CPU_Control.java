@@ -17,7 +17,10 @@ public class CPU_Control{
 	public Cache cache = new Cache();
 	public ALU alu = new ALU();
 	public Device device = new Device();
-	// machine fault status 
+	public Float_ALU FALU = new Float_ALU();
+	public Float_Registers FRs = new Float_Registers();
+	public Vector_Registers VR1 = new Vector_Registers();
+	public Vector_Registers VR2 = new Vector_Registers();
 	private int mfindex = 0;
 	// halt or not
 	public int halt = 0;
@@ -33,6 +36,8 @@ public class CPU_Control{
 		IXR = new Index_Registers(0, 100, 1000);
 		MAR = new Memory_Address_Register();
 		MBR = new Memory_Buffer_Register();
+		FALU = new Float_ALU();
+		FRs = new Float_Registers();
 		MFR.resetMFR();
 		device = new Device();
 		cache = new Cache();
@@ -70,6 +75,8 @@ public class CPU_Control{
 		IXR = new Index_Registers(0, 100, 1000);
 		MAR = new Memory_Address_Register();
 		MBR = new Memory_Buffer_Register();
+		FALU = new Float_ALU();
+		FRs = new Float_Registers();
 		MFR.resetMFR();
 		device = new Device();
 		cache = new Cache();
@@ -107,6 +114,8 @@ public class CPU_Control{
 		IXR = new Index_Registers(0, 100, 1000);
 		MAR = new Memory_Address_Register();
 		MBR = new Memory_Buffer_Register();
+		FALU = new Float_ALU();
+		FRs = new Float_Registers();
 		MFR.resetMFR();
 		device = new Device();
 		cache = new Cache();
@@ -240,6 +249,20 @@ public class CPU_Control{
 			case 24:
 				TRAP();
 				break;
+			case 27:
+				FADD();
+			case 28:
+				FSUB();
+			case 31:
+				CNVRT();
+			case 40:
+				LDFR();
+			case 41:
+				STFR();
+			case 29:
+				VADD();
+			case 30:
+				VSUB();
 			default:
 				MFR.setFault(2);
 				halt = 1;
@@ -885,6 +908,336 @@ public class CPU_Control{
 		PC.setPCaddress(cache.readCache(traptable_address + trap_number + 8));
 	}
 	
+	// FADD instruction
+	public void FADD() {
+		int EA = 0;
+		// checks for an IR indirect in each register and computing the correct EA
+		if (IR.getindirect() == 0) {
+			if (IR.getindexregister() == 0) {
+				EA = IR.getaddress();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				EA = IXR.getregister(IR.getindexregister()) + IR.getaddress();
+			}
+		}
+		else if (IR.getindirect() == 1) {
+			if (IR.getindexregister() == 0) {
+				MAR.setMemaddress(IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				MAR.setMemaddress(IXR.getregister(IR.getindexregister()) + IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+		}
+		// set the correct EA to the MAR
+		MAR.setMemaddress(EA);
+		// read the Memory and fetch the data to the MBR
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+		double res = FALU.floatAdd(FRs.readFloat(IR.getregister()), MBR.getData());
+		FRs.writeFloat(IR.getregister(), res);
+	}
+	
+	// FSUB instruction
+	public void FSUB() {
+		int EA = 0;
+		// checks for an IR indirect in each register and computing the correct EA
+		if (IR.getindirect() == 0) {
+			if (IR.getindexregister() == 0) {
+				EA = IR.getaddress();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				EA = IXR.getregister(IR.getindexregister()) + IR.getaddress();
+			}
+		}
+		else if (IR.getindirect() == 1) {
+			if (IR.getindexregister() == 0) {
+				MAR.setMemaddress(IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				MAR.setMemaddress(IXR.getregister(IR.getindexregister()) + IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+		}
+		// set the correct EA to the MAR
+		MAR.setMemaddress(EA);
+		// read the Memory and fetch the data to the MBR
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+		double res = FALU.floatSub(FRs.readFloat(IR.getregister()), MBR.getData());
+		FRs.writeFloat(IR.getregister(), res);
+	}
+	
+	// CNVRT instruction
+	public void CNVRT() {
+		int EA = 0;
+		// checks for an IR indirect in each register and computing the correct EA
+		if (IR.getindirect() == 0) {
+			if (IR.getindexregister() == 0) {
+				EA = IR.getaddress();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				EA = IXR.getregister(IR.getindexregister()) + IR.getaddress();
+			}
+		}
+		else if (IR.getindirect() == 1) {
+			if (IR.getindexregister() == 0) {
+				MAR.setMemaddress(IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				MAR.setMemaddress(IXR.getregister(IR.getindexregister()) + IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+		}
+		// set the correct EA to the MAR
+		MAR.setMemaddress(EA);
+		// read the Memory and fetch the data to the MBR
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+		int F = GPRs.getregister(IR.getregister());
+		if (F == 0) {
+			int fixed = FALU.convertToFix(MBR.getData());
+			GPRs.setregister(IR.getregister(), fixed);
+		}
+		else {
+			int floatnumber = FALU.convertToFloat(MBR.getData());
+			FRs.writeFloat(0, floatnumber);
+		}
+	}
+	
+	// LDFR instruction
+	public void LDFR() {
+		int EA = 0;
+		// checks for an IR indirect in each register and computing the correct EA
+		if (IR.getindirect() == 0) {
+			if (IR.getindexregister() == 0) {
+				EA = IR.getaddress();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				EA = IXR.getregister(IR.getindexregister()) + IR.getaddress();
+			}
+		}
+		else if (IR.getindirect() == 1) {
+			if (IR.getindexregister() == 0) {
+				MAR.setMemaddress(IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				MAR.setMemaddress(IXR.getregister(IR.getindexregister()) + IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+		}
+		// set the correct EA to the MAR
+		MAR.setMemaddress(EA);
+		// read the Memory and fetch the data to the MBR
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+		FRs.writeFloat(IR.getregister(), MBR.getData());
+	}
+	
+	// STFR instruction
+	public void STFR() {
+		int EA = 0;
+		// checks for an IR indirect in each register and computing the correct EA
+		if (IR.getindirect() == 0) {
+			if (IR.getindexregister() == 0) {
+				EA = IR.getaddress();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				EA = IXR.getregister(IR.getindexregister()) + IR.getaddress();
+			}
+		}
+		else if (IR.getindirect() == 1) {
+			if (IR.getindexregister() == 0) {
+				MAR.setMemaddress(IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				MAR.setMemaddress(IXR.getregister(IR.getindexregister()) + IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+		}
+		// set the correct EA to the MAR
+		MAR.setMemaddress(EA);
+		// read the Memory and fetch the data to the MBR
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(FRs.registers[IR.getregister()]);
+		cache.writeCache(MAR.getMemaddress()+8, MBR.getData());
+		cache.writeCache(MAR.getMemaddress()+ 8 + 1, MBR.getData());
+	}
+	
+	// VADD instruction
+	public void VADD() {
+		int EA = 0;
+		// checks for an IR indirect in each register and computing the correct EA
+		if (IR.getindirect() == 0) {
+			if (IR.getindexregister() == 0) {
+				EA = IR.getaddress();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				EA = IXR.getregister(IR.getindexregister()) + IR.getaddress();
+			}
+		}
+		else if (IR.getindirect() == 1) {
+			if (IR.getindexregister() == 0) {
+				MAR.setMemaddress(IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				MAR.setMemaddress(IXR.getregister(IR.getindexregister()) + IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+		}
+		int vecterLength = (int) FRs.readFloat(IR.getregister());
+		VR1.initial(vecterLength);
+		VR2.initial(vecterLength);
+		MAR.setMemaddress(EA);
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+		int vector1Address = MBR.getData();
+		MAR.setMemaddress(EA+1);
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+		int vector2Address = MBR.getData();
+		for (int i = vector1Address, j = 0; i < vector1Address + vecterLength; i++, j++) {
+			MAR.setMemaddress(i);
+			mfindex = cache.readCache(MAR.getMemaddress()+8);
+			checkaddress();
+			MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+			VR1.writeElement(j, MBR.getData());
+		}
+		for (int i = vector2Address, j = 0; i < vector2Address + vecterLength; i++, j++) {
+			MAR.setMemaddress(i);
+			mfindex = cache.readCache(MAR.getMemaddress()+8);
+			checkaddress();
+			MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+			VR1.writeElement(j, MBR.getData());
+		}
+		for (int i = 0; i < vecterLength; i++) {
+			VR1.writeElement(i, VR1.readElement(i) + VR2.readElement(i));
+		}
+		for (int i = vector1Address, j = 0; i < vector1Address + vecterLength; i++, j++) {
+			MAR.setMemaddress(i);
+			mfindex = cache.readCache(MAR.getMemaddress()+8);
+			checkaddress();
+			MBR.setData(VR1.readElement(j));
+			cache.writeCache(MAR.getMemaddress()+8, MBR.getData());
+		}
+	}
+	
+	// VSUB instruction
+	public void VSUB() {
+		int EA = 0;
+		// checks for an IR indirect in each register and computing the correct EA
+		if (IR.getindirect() == 0) {
+			if (IR.getindexregister() == 0) {
+				EA = IR.getaddress();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				EA = IXR.getregister(IR.getindexregister()) + IR.getaddress();
+			}
+		}
+		else if (IR.getindirect() == 1) {
+			if (IR.getindexregister() == 0) {
+				MAR.setMemaddress(IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+			else if (IR.getindexregister() > 0 && IR.getindexregister() < 4) {
+				MAR.setMemaddress(IXR.getregister(IR.getindexregister()) + IR.getaddress());
+				mfindex = cache.readCache(MAR.getMemaddress()+8);
+				checkaddress();
+				MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+				EA = MBR.getData();
+			}
+		}
+		int vecterLength = (int) FRs.readFloat(IR.getregister());
+		VR1.initial(vecterLength);
+		VR2.initial(vecterLength);
+		MAR.setMemaddress(EA);
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+		int vector1Address = MBR.getData();
+		MAR.setMemaddress(EA+1);
+		mfindex = cache.readCache(MAR.getMemaddress()+8);
+		checkaddress();
+		MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+		int vector2Address = MBR.getData();
+		for (int i = vector1Address, j = 0; i < vector1Address + vecterLength; i++, j++) {
+			MAR.setMemaddress(i);
+			mfindex = cache.readCache(MAR.getMemaddress()+8);
+			checkaddress();
+			MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+			VR1.writeElement(j, MBR.getData());
+		}
+		for (int i = vector2Address, j = 0; i < vector2Address + vecterLength; i++, j++) {
+			MAR.setMemaddress(i);
+			mfindex = cache.readCache(MAR.getMemaddress()+8);
+			checkaddress();
+			MBR.setData(cache.readCache(MAR.getMemaddress()+8));
+			VR1.writeElement(j, MBR.getData());
+		}
+		for (int i = 0; i < vecterLength; i++) {
+			VR1.writeElement(i, VR1.readElement(i) - VR2.readElement(i));
+		}
+		for (int i = vector1Address, j = 0; i < vector1Address + vecterLength; i++, j++) {
+			MAR.setMemaddress(i);
+			mfindex = cache.readCache(MAR.getMemaddress()+8);
+			checkaddress();
+			MBR.setData(VR1.readElement(j));
+			cache.writeCache(MAR.getMemaddress()+8, MBR.getData());
+		}
+	}
+	
 // check the access of memory is write or not. If not, we go to set the MFR and get solution which is halt right now
 	public void checkaddress() {
 		if (mfindex == -1) {
@@ -893,7 +1246,7 @@ public class CPU_Control{
 		}
 		else if (mfindex == -2) {
 			MFR.setFault(3);
-			machinefault();	
+			machinefault();
 		}
 	}
 

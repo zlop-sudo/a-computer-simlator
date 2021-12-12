@@ -89,7 +89,7 @@ public class interact {
 		case 10:
 			return CPU.MBR.getData();
 		case 11:
-			return CPU.IR.getinstruction();
+			return CPU.IR.getaddress();
 		case 12:
 			return CPU.MFR.getFault();
 		case 13:
